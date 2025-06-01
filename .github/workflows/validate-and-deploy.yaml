@@ -37,6 +37,7 @@ jobs:
     name: Deploy to Home Cluster
     runs-on: self-hosted
     needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     
     steps:
