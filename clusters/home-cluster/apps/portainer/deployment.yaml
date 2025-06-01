@@ -16,13 +16,7 @@ spec:
       containers:
         - name: portainer
           image: portainer/portainer-ce:latest
-          args:
-            - "--http-disabled"
-            - "--ssl"
-            - "--sslcert"
-            - "/certs/tls.crt"
-            - "--sslkey"              
-            - "/certs/tls.key"
+          args: []
           ports:
             - containerPort: 9443
           resources:
@@ -35,12 +29,11 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: certs
-              mountPath: /certs
           readinessProbe:
             httpGet:
               path: /api/status
               port: 9443
+              scheme: HTTPS
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
@@ -48,6 +41,3 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: portainer-data
-        - name: certs
-          secret:
-            secretName: portainer-tls
