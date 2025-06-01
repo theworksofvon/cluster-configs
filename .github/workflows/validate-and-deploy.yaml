@@ -7,13 +7,11 @@ on:
       - 'clusters/**/*.yaml'
       - 'clusters/**/*.yml'
       - 'clusters/validate.sh'
-      - 'Makefile'
   pull_request:
     paths:
       - 'clusters/**/*.yaml'
       - 'clusters/**/*.yml'
       - 'clusters/validate.sh'
-      - 'Makefile'
 
 jobs:
   validate:
@@ -30,10 +28,10 @@ jobs:
       - name: Install Python dependencies
         run: pip install PyYAML
 
-      - name: Run validation
+      - name: Run validation script
         run: |
           chmod +x clusters/validate.sh
-          make validate
+          ./clusters/validate.sh
 
   deploy:
     name: Deploy to Home Cluster
