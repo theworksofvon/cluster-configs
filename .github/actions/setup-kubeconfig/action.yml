@@ -1,0 +1,11 @@
+name: 'Verify Kubeconfig'
+description: 'Verify existing kubectl configuration and connection'
+runs:
+  using: "composite"
+  steps:
+    - name: Verify kubectl connection
+      shell: bash
+      run: |
+        echo "Verifying existing cluster connection..."
+        kubectl cluster-info || (echo "❌ Failed to connect to cluster using existing configuration" && exit 1)
+        echo "✅ Existing kubectl configuration is valid and connected." 

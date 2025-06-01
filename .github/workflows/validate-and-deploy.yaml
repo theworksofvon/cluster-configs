@@ -1,0 +1,55 @@
+name: Validate and Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'clusters/**/*.yaml'
+      - 'clusters/**/*.yml'
+      - 'clusters/validate.sh'
+      - 'Makefile'
+  pull_request:
+    paths:
+      - 'clusters/**/*.yaml'
+      - 'clusters/**/*.yml'
+      - 'clusters/validate.sh'
+      - 'Makefile'
+
+jobs:
+  validate:
+    name: Validate Manifests
+    runs-on: self-hosted
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Install Python dependencies
+        run: pip install PyYAML
+
+      - name: Run validation
+        run: |
+          chmod +x clusters/validate.sh
+          make validate
+
+  deploy:
+    name: Deploy to Home Cluster
+    runs-on: self-hosted
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify Kubeconfig
+        uses: ./.github/actions/setup-kubeconfig
+
+      - name: Deploy Home Cluster Applications
+        run: |
+          echo "📦 Deploying to home cluster..."
+          kubectl apply -f clusters/home-cluster --recursive
+          echo "✅ Deployment complete!" 

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portainer
+  namespace: portainer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portainer
+  template:
+    metadata:
+      labels:
+        app: portainer
+    spec:
+      containers:
+        - name: portainer
+          image: portainer/portainer-ce:latest
+          args:
+            - "--http-disabled"
+            - "--ssl"
+            - "--sslcert"
+            - "/certs/tls.crt"
+            - "--sslkey"              
+            - "/certs/tls.key"
+          ports:
+            - containerPort: 9443
+          resources:
+            requests: 
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: certs
+              mountPath: /certs
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 9443
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: portainer-data
+        - name: certs
+          secret:
+            secretName: portainer-tls
