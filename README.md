@@ -16,7 +16,6 @@ make clean
 ```
 
 ## Validation Script
-
 The `clusters/validate.sh` script validates Kubernetes manifests by:
 
 1. **YAML Syntax Validation** - Checks for valid YAML syntax
