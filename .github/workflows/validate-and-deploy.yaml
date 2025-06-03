@@ -32,23 +32,3 @@ jobs:
         run: |
           chmod +x clusters/validate.sh
           ./clusters/validate.sh
-
-  deploy:
-    name: Deploy to Home Cluster
-    runs-on: self-hosted
-    needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Verify Kubeconfig
-        uses: ./.github/actions/setup-kubeconfig
-
-      - name: Deploy Home Cluster Applications
-        run: |
-          echo "📦 Deploying to home cluster..."
-          kubectl apply -f clusters/home-cluster --recursive
-          echo "✅ Deployment complete!" 
